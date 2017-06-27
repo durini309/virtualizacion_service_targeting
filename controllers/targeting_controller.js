@@ -17,28 +17,10 @@ module.exports = {
             }
         });
 
-        var zipCode = parseInt(req.query['zip_code']);
-        var ids     = req.query['advertiser_campaigns'];
-
-        var query = 
-            'SELECT\n' + 
-            '   id,\n' + 
-            '   name,\n ' + 
-            '   category, \n' + 
-            "   CAST(status as unsigned) as 'status', \n" + 
-            '   bid, \n' + 
-            '   budget\n' + 
-            'FROM\n' +
-            '   advertiser_campaigns\n' +
-            'WHERE' + 
-            '   id IN (' + ids + ') AND\n' +
-            "   ((targeting like '%,?,%' OR targeting like '?,%' OR targeting like '%,?') OR\n" +
-            "   (targeting is null OR targeting = '' OR targeting = 'ALL'));";
-
+        var query = 'CALL get_allowed_campaigns(?, ?)';
         var params = [
-            zipCode, 
-            zipCode, 
-            zipCode
+            req.query['advertiser_campaigns'],
+            req.query['zip_code']
         ];
 
         connection.query(query, params, function(error, results, fields) {
@@ -50,16 +32,15 @@ module.exports = {
                 console.log('ERROR - Problem with provided query: ' + error.message);
                 res.status(500).send({message: error.message});
             } else {
-
-            //No records, return 404
-            if(results.length == 0){
-                console.log('ERROR - No records found');
-                res.status(400).send({message: 'ERROR - No records found'});
-            } else {
-                //Found records
-                console.log('OK - Successful query with results: ' + results);
-                res.status(200).send({'response' : results});
-            }
+                //No records, return 404
+                if(results[0].length == 0){
+                    console.log('ERROR - No records found');
+                    res.status(400).send({message: 'ERROR - No records found'});
+                } else {
+                    //Found records
+                    console.log('OK - Successful query with results: ' + results[0]);
+                    res.status(200).send({'response' : results[0]});
+                }
             }
         }); 
     }
