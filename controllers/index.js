@@ -1,5 +1,5 @@
-const matching_controller = require('./matching_controller');
+const targeting_controller = require('./targeting_controller');
 
 module.exports = {
-    matching_controller
+    targeting_controller
 }

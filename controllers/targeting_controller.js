@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 
 module.exports = {
-    getAdvertisers(req, res){
+    getAllowedCampaigns(req, res){
         var connection = mysql.createConnection({
             host: 'zyklusdb.ciohag68m4xh.us-east-2.rds.amazonaws.com',
             user: 'zykladmin',
@@ -18,9 +18,10 @@ module.exports = {
             }
         });
         
-        var query = "CALL get_active_campaigns(?)";
+        var query = "CALL get_allowed_campaigns(?)";
         var params = [
-            req.params['campaign']
+            req.params['advertiser_campaigns'], 
+            req.params['zip_code']
         ];
 
         connection.query(query, params, function(error, results, fields) {
